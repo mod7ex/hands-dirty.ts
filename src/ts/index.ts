@@ -31,3 +31,21 @@ let maybeRun = function (cb: Function, allow: boolean, ctx: object = window) {
 };
 
 */
+
+// *********************************************************************************
+
+type Falsy = null | undefined | false | "" | 0;
+
+type NotFalsy<T = Falsy> = T extends Falsy ? never : T;
+
+let x: NotFalsy<string> = "";
+
+// *********************************************************************************
+
+type Filter<T, U> = T extends U ? never : T; // it filters U from T --- called Exclude in ts ---
+
+type FilteredResult = Filter<"a" | "b" | "c", "a" | "z">;
+
+// *********************************************************************************
+
+// *********************************************************************************
