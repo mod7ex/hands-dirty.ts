@@ -1,10 +1,11 @@
-/*
+namespace Index {
+	/*
     --> the function countSubStrings counts how many (separated or not) times the srearchSubject appears in str
     --> countSubStrings('sss', 'ss', true) => 1
     --> countSubStrings('sss', 'ss') => 2
 */
 
-/*
+	/*
 
 const countSubStrings = (str: string, srearchSubject: string, separated: boolean): number => {
 	if (!srearchSubject) return 0;
@@ -32,21 +33,22 @@ let maybeRun = function (cb: Function, allow: boolean, ctx: object = window) {
 
 */
 
-// *********************************************************************************
+	// *********************************************************************************
 
-type Falsy = null | undefined | false | "" | 0;
+	type Falsy = null | undefined | false | "" | 0;
 
-type NotFalsy<T = Falsy> = T extends Falsy ? never : T;
+	type NotFalsy<T = Falsy> = T extends Falsy ? never : T;
 
-let x: NotFalsy<string> = "";
+	let x: NotFalsy<string> = "";
 
-// *********************************************************************************
+	// *********************************************************************************
 
-// it filters U from T --- called Exclude in ts ---
-type Filter<T, U> = T extends U ? never : T;
+	// it filters U from T --- called Exclude in ts ---
+	type Filter<T, U> = T extends U ? never : T;
 
-type FilteredResult = Filter<"a" | "b" | "c", "a" | "z">;
+	type FilteredResult = Filter<"a" | "b" | "c", "a" | "z">;
 
-// *********************************************************************************
+	// *********************************************************************************
 
-// *********************************************************************************
+	// *********************************************************************************
+}
