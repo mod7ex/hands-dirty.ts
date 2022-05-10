@@ -42,7 +42,8 @@ let x: NotFalsy<string> = "";
 
 // *********************************************************************************
 
-type Filter<T, U> = T extends U ? never : T; // it filters U from T --- called Exclude in ts ---
+// it filters U from T --- called Exclude in ts ---
+type Filter<T, U> = T extends U ? never : T;
 
 type FilteredResult = Filter<"a" | "b" | "c", "a" | "z">;
 

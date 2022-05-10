@@ -1,17 +1,8 @@
-type QueueJob<Q extends string, P> = {
-	queue: Q;
-	payload: P;
-};
+type QueueJob<Q extends string, P> = { queue: Q; payload: P };
 
-type WelcomeEmail = {
-	to: string;
-	body: string;
-};
+type WelcomeEmail = { to: string; body: string };
 
-type ProcessPayment = {
-	userName: string;
-	accountId: number;
-};
+type ProcessPayment = { userName: string; accountId: number };
 
 type WelcomeEmailJob = QueueJob<"email", WelcomeEmail>;
 

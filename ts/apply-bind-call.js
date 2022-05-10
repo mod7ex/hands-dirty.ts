@@ -9,11 +9,10 @@ let printFullName = function (x, y) {
 
 /* *********** default bind function *********** */
 
-let foo = printFullName.bind(modex, "3");
-foo(55);
+let fooo = printFullName.bind(modex, "3");
+fooo(55);
 
 /* *********** custom bind function *********** */
-
 Function.prototype.myBind = function (...args) {
 	let fonc = this;
 
