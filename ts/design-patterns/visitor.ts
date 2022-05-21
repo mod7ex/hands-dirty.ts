@@ -1,4 +1,4 @@
-namespace Mediator {
+namespace Visitor {
 	// visitor object and receiver object
 
 	class Employee {
