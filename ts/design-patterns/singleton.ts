@@ -1,9 +1,4 @@
 namespace Singleton {
-	// name space just to scope variable names
-	class Process<T> {
-		constructor(public state: T) {}
-	}
-
 	class ProcessManager {
 		constructor(public numProcess: number = 0) {}
 	}
@@ -11,13 +6,9 @@ namespace Singleton {
 	const Singleton = (function () {
 		let pManager: ProcessManager;
 
-		function createProcessManager() {
-			pManager = new ProcessManager();
-		}
-
 		return {
 			getProcessManager: () => {
-				if (!pManager) createProcessManager();
+				if (!pManager) pManager = new ProcessManager();
 
 				return pManager;
 			},
@@ -28,4 +19,32 @@ namespace Singleton {
 	let pm1 = Singleton.getProcessManager();
 
 	console.log(pm == pm1);
+
+	/* ***************** Handle Singlton logic inside the class ***************** */
+	// =======+> the prefered way
+	class Logger {
+		private static _instance: Logger | undefined; // here we will handle the uniqueness of the instance
+
+		constructor(private logs: string[] = []) {
+			if (!Logger._instance) {
+				Logger._instance = this;
+			}
+
+			return Logger._instance;
+		}
+
+		log(msg: string) {
+			this.logs.push(msg);
+		}
+
+		logsCount() {
+			return this.logs.length;
+		}
+	}
+
+	let a = new Logger();
+
+	let b = new Logger();
+
+	console.log(a === b); // true
 }
