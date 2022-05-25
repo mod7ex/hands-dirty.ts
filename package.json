@@ -1,11 +1,15 @@
 {
 	"scripts": {
-		"dev": "npx tsc"
+		"dev": "npx tsc",
+		"git:fake": "node github.js"
 	},
 	"devDependencies": {
 		"typescript": "^4.6.4"
 	},
 	"dependencies": {
-		"node-fetch": "^3.2.4"
+		"jsonfile": "^6.1.0",
+		"moment": "^2.29.3",
+		"node-fetch": "^3.2.4",
+		"simple-git": "^3.7.1"
 	}
 }
