@@ -1,0 +1,1 @@
+namespace INTERFACE_SEGREGATION {}
