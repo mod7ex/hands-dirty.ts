@@ -65,6 +65,90 @@ namespace MappedTypes {
 	type RequireProps<T> = T extends { [key in keyof T]?: any } ? { [key in keyof T]-?: T[key] } : never;
 	type RequireCords = RequireProps<Optional_Dot>;
 
-	type OPtionalProps<T> = T extends { [key in keyof T]: any } ? { [key in keyof T]?: T[key] } : never;
-	type OptionalCords = OPtionalProps<Readonly_Dot>;
+	type OptionalProps<T> = T extends { [key in keyof T]: any } ? { [key in keyof T]?: T[key] } : never;
+	type OptionalCords = OptionalProps<Readonly_Dot>;
+
+	type C_Partial<T> = {
+		[K in keyof T]?: T[K];
+	};
+}
+
+namespace Interfaces_Types {
+	// *************************** Declaration Merging ***************************
+
+	// Ex --> Express Base
+	interface Request {
+		body: any;
+	}
+
+	// Ex Json
+	interface Request {
+		json: any;
+	}
+
+	// Tow declarations will merged
+
+	let middleware = (req: Request) => {
+		let { body, json } = req;
+	};
+
+	// *********************************************************************************
+
+	/*
+		// For types we can't declare a type twice they won't be merged
+		type T = "a";
+		type T = "b";
+
+		let gg: T;
+	*/
+
+	// Where to use types and where to use Interfaces
+
+	/*
+									Types | Interfaces
+				************************* | *************************
+							  	   Unions | Declaration Merging
+				************************* | *************************
+							   Primitives | Familiarity (extends)
+				************************* | *************************
+					  Shorthand Functions | *************************
+				************************* | *************************
+				  Advanced Type Functions | *************************
+										  | 
+	*/
+}
+
+namespace Mapped_Types_Ex {
+	type C_Partial<T> = {
+		[K in keyof T]?: T[K];
+	};
+
+	class State<T extends object> {
+		constructor(public current: T) {}
+
+		update(next: C_Partial<T>) {
+			this.current = { ...this.current, ...next };
+		}
+	}
+
+	let state = new State({ x: 0, y: 0, z: 0 });
+	state.update({ x: 1 }); // we can pass only the update no need to pass all params
+
+	// ***********************************************************************
+
+	type C_Required<T> = {
+		[K in keyof T]-?: T[K];
+	};
+
+	type C_Readonly<T> = {
+		readonly [K in keyof T]: T[K];
+	};
+
+	let makeReadonly = <T extends object>(target: T): C_Readonly<T> => {
+		return Object.freeze({ ...target });
+	};
+
+	type C_Changeable<T> = {
+		-readonly [K in keyof T]: T[K];
+	};
 }
