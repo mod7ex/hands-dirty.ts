@@ -151,4 +151,12 @@ namespace Mapped_Types_Ex {
 	type C_Changeable<T> = {
 		-readonly [K in keyof T]: T[K];
 	};
+
+	type C_Exclude<Target, K> = Target extends K ? never : Target;
+
+	type C_Omit<T extends object, K extends string | number | symbol> = {
+		[Key in C_Exclude<keyof T, K>]: T[Key];
+	};
+
+	type Zx = C_Omit<{ name: string; age: number }, "age">;
 }

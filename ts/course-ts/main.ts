@@ -47,3 +47,44 @@ namespace Union_Never {
 
 	type V = Dis_NoEmpty<null | string | boolean | undefined>;
 }
+
+namespace Exercices {
+	// const api = promisifyAll(oldApi);
+
+	// ***********************************************************************
+
+	export type ApiResponse<T> = { status: "success"; data: T } | { status: "error"; error: string };
+
+	type Callback<T> = (responce: ApiResponse<T>) => void;
+	type Func<T> = (cb: Callback<T>) => void;
+
+	function promisify<T>(fn: Func<T>): () => Promise<T> {
+		return () => {
+			return new Promise((resolve, reject) => {
+				fn((responce) => {
+					if (responce.status === "success") {
+						resolve(responce.data);
+					} else {
+						reject(new Error(responce.error));
+					}
+				});
+			});
+		};
+	}
+
+	type KeysOf<T extends object> = T extends { [k in infer V]: any } ? V : never;
+
+	type Funcky = <T>(cb: Callback<T>) => void;
+
+	type Funcs = { [key in string]: Funcky };
+
+	function promisifyAll<T>(oldAPi: Funcs) {
+		let api: { [key in KeysOf<typeof oldAPi>]: Funcky } = {};
+
+		Object.keys(oldAPi).forEach((item: KeysOf<typeof oldAPi>) => {
+			api[item] = promisify(oldAPi[item]!);
+		});
+
+		return api;
+	}
+}

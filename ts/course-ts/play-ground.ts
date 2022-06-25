@@ -27,6 +27,7 @@ namespace Ts {
 		type N = typeof arr[number];
 	*/
 	type IndexesOf<T extends readonly unknown[], S extends number[] = []> = T["length"] extends S["length"] ? S[number] : IndexesOf<T, [S["length"], ...S]>;
+	type TypeKeys<T extends object> = T extends { [k in infer V]: any } ? V : never;
 
 	type IndexesOfA = IndexesOf<typeof a>;
 
