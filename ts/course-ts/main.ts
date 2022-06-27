@@ -49,10 +49,6 @@ namespace Union_Never {
 }
 
 namespace Exercices {
-	// const api = promisifyAll(oldApi);
-
-	// ***********************************************************************
-
 	export type ApiResponse<T> = { status: "success"; data: T } | { status: "error"; error: string };
 
 	type Callback<T> = (responce: ApiResponse<T>) => void;
@@ -74,17 +70,64 @@ namespace Exercices {
 
 	type KeysOf<T extends object> = T extends { [k in infer V]: any } ? V : never;
 
-	type Funcky = <T>(cb: Callback<T>) => void;
+	type FuncsObj<T extends object> = { [K in keyof T]: Func<T[K]> };
+	type PromisifiedFuncsObj<T extends object> = { [K in keyof T]: () => Promise<T[K]> };
 
-	type Funcs = { [key in string]: Funcky };
+	function promisifyAll<T extends object>(oldAPi: FuncsObj<T>) {
+		let api: Partial<PromisifiedFuncsObj<T>> = {};
 
-	function promisifyAll<T>(oldAPi: Funcs) {
-		let api: { [key in KeysOf<typeof oldAPi>]: Funcky } = {};
+		for (let key of Object.keys(oldAPi) as (keyof T)[]) {
+			api[key] = promisify(oldAPi[key]);
+		}
 
-		Object.keys(oldAPi).forEach((item: KeysOf<typeof oldAPi>) => {
-			api[item] = promisify(oldAPi[item]!);
-		});
-
-		return api;
+		return api as PromisifiedFuncsObj<T>;
 	}
+
+	// ***********************************************************************
+	// https://dev.to/svehla/typescript-transform-case-strings-450b
+
+	// Really important exo https://typescript-exercises.github.io/#exercise=11
+
+	type StrReverse<T extends string> = T extends `${infer A}${infer B}` ? `${StrReverse<B>}${A}` : T;
+
+	// -----------------------------------------------------------
+
+	type LowToUp = {
+		a: "A";
+		b: "B";
+		c: "C";
+		d: "D";
+		e: "E";
+		f: "F";
+		g: "G";
+		h: "H";
+		i: "I";
+		j: "J";
+		k: "K";
+		l: "L";
+		m: "M";
+		n: "N";
+		o: "O";
+		p: "P";
+		q: "Q";
+		r: "R";
+		s: "S";
+		t: "T";
+		u: "U";
+		v: "V";
+		w: "W";
+		x: "X";
+		y: "Y";
+		z: "Z";
+	};
+
+	type ArrayToUnion<T extends any[]> = T[number];
+
+	type ValueOf<T extends object> = T[keyof T];
+
+	type KeyOf<T extends object, V extends ValueOf<T>> = ValueOf<{ [K in keyof T]: V extends T[K] ? K : never }>;
+
+	type Reverse<T extends { [k in string]: string }> = { [V in ValueOf<T>]: KeyOf<T, V> };
+
+	type UpToLow = Reverse<LowToUp>;
 }

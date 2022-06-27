@@ -26,6 +26,7 @@ namespace Ts {
 		const arr = [1, 2, 3] as const;
 		type N = typeof arr[number];
 	*/
+
 	type IndexesOf<T extends readonly unknown[], S extends number[] = []> = T["length"] extends S["length"] ? S[number] : IndexesOf<T, [S["length"], ...S]>;
 	type TypeKeys<T extends object> = T extends { [k in infer V]: any } ? V : never;
 
@@ -77,4 +78,22 @@ namespace Ts {
 	let name: Person["name"];
 	let friend: Person["friends"][0];
 	let oneOfTheFriends: Person["friends"][number];
+
+	// *********************************************************************************************
+	type User = {
+		id: number;
+		firstName: string;
+		lastName: string;
+		email: string;
+	};
+
+	// all possible combinations will be there
+	type Primitive = string | number | symbol;
+	type TupleUnion<U extends Primitive, R extends Primitive[] = []> = { [S in U]: Exclude<U, S> extends never ? [...R, S] : TupleUnion<Exclude<U, S>, [...R, S]> }[U] & string[];
+
+	// ----------------------------------------------------------------------------------------------
+	type ValueOf<T extends object> = T[keyof T];
+	type KeyOf<T extends object, V extends ValueOf<T>> = ValueOf<{ [K in keyof T]: V extends T[K] ? K : never }>;
+
+	// Impliment IndexOf
 }
