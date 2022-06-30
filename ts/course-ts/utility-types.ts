@@ -1,108 +1,113 @@
 namespace UtilityClasses {
-	// my own implementation of utility classes
+  // my own implementation of utility types
 
-	type C_Partial0<T extends object> = T extends { [K in keyof T]: infer V } ? { [K in keyof T]?: V } : never;
+  type C_Partial<T extends object> = { [K in keyof T]?: T[K] };
+  type C_Partial0<T extends object> = T extends { [K in keyof T]: infer V } ? { [K in keyof T]?: V } : never;
+  type C_Partial1<T extends object> = T extends { [K in keyof T]: T[K] } ? { [K in keyof T]?: T[K] } : never;
 
-	type C_Partial1<T extends object> = T extends { [K in keyof T]: T[K] } ? { [K in keyof T]?: T[K] } : never;
+  type C_Required<T extends object> = { [K in keyof T]-?: T[K] };
+  type C_ReadOnly<T extends object> = { readonly [K in keyof T]: T[K] };
 
-	type C_Partial<T extends object> = { [K in keyof T]?: T[K] };
+  type C_Record<K extends string | number | symbol, T> = { [P in K]: T };
 
-	type C_Required<T extends object> = { [K in keyof T]-?: T[K] };
+  type C_Pick0<T, K> = { [P in Extract<K, keyof T>]: T[P] };
+  type C_Pick<T extends object, Props extends keyof T> = { [k in Props]: T[k] };
 
-	type C_ReadOnly<T extends object> = { readonly [K in keyof T]: T[K] };
+  type C_Omit<T, K extends string | number | symbol> = { [P in Exclude<keyof T, K>]: T[P] };
 
-	type C_Record<K extends string | number | symbol, T> = { [P in K]: T };
+  type C_NonNullable<T> = Exclude<T, undefined | null>;
 
-	type C_Pick0<T, K> = { [P in Extract<K, keyof T>]: T[P] };
-	type C_Pick<T extends object, Props extends keyof T> = { [k in Props]: T[k] };
+  // type C_Params<T> = T extends (...agrs: [...infer P])=> any ? P : never
+  type C_Params<T> = T extends (...agrs: infer P) => any ? P : never;
 
-	type C_Omit<T, K extends string | number | symbol> = { [P in Exclude<keyof T, K>]: T[P] };
+  type C_ConstructorParams<T> = T extends new (...args: infer P) => any ? P : never;
 
-	type C_NonNullable<T> = Exclude<T, undefined | null>;
+  /* ************************************ Mixin pattern ************************************ */
 
-	// type C_Params<T> = T extends (...agrs: [...infer P])=> any ? P : never
-	type C_Params<T> = T extends (...agrs: infer P) => any ? P : never;
+  // constructor function
+  let deletabale = <T extends new (...args: any[]) => {}>(Base: T) => {
+    // creates new classes with functionality of deletion
+    return class extends Base {
+      // @ts-ignore
+      deleted: boolean;
+      delete() {}
+    };
+  };
 
-	type C_ConstructorParams<T> = T extends new (...args: infer P) => any ? P : never;
+  class Car {
+    constructor(public name: string) {}
 
-	/* ************************************ Mixin pattern ************************************ */
+    drive() {}
 
-	// constructor function
-	let deletabale = <T extends new (...args: any[]) => {}>(Base: T) => {
-		// creates new classes with functionality of deletion
-		return class extends Base {
-			// @ts-ignore
-			deleted: boolean;
-			delete() {}
-		};
-	};
+    buildCar() {
+      // instantiate a car with some features
+    }
+  }
 
-	class Car {
-		constructor(public name: string) {}
+  type XCar = InstanceType<typeof Car>;
 
-		drive() {}
+  class User {
+    constructor(public name: string) {}
+  }
 
-		buildCar() {
-			// instantiate a car with some features
-		}
-	}
+  const DeletabaleCar = deletabale(Car);
+  const DeletabaleUser = deletabale(User);
 
-	type XCar = InstanceType<typeof Car>;
+  type DeletabaleCarInstance = InstanceType<typeof DeletabaleCar>; // get type from anonymous classes
+  type DeletabaleUserInstance = InstanceType<typeof DeletabaleUser>; // get type from anonymous classes
 
-	class User {
-		constructor(public name: string) {}
-	}
+  class Profile {
+    constructor(public user?: DeletabaleUserInstance, public car?: DeletabaleCarInstance) {}
+  }
 
-	const DeletabaleCar = deletabale(Car);
-	const DeletabaleUser = deletabale(User);
+  let profile = new Profile();
+  profile.user = new DeletabaleUser("Mourad");
+  profile.car = new DeletabaleCar("Range-Rover");
 
-	type DeletabaleCarInstance = InstanceType<typeof DeletabaleCar>; // get type from anonymous classes
-	type DeletabaleUserInstance = InstanceType<typeof DeletabaleUser>; // get type from anonymous classes
+  /* ************************************ This keyword (context) ************************************ */
 
-	class Profile {
-		constructor(public user?: DeletabaleUserInstance, public car?: DeletabaleCarInstance) {}
-	}
+  /* Note that the 'noImplicitThis' flag must be enabled to use this utility. */
 
-	let profile = new Profile();
-	profile.user = new DeletabaleUser("Mourad");
-	profile.car = new DeletabaleCar("Range-Rover");
+  interface MyObject {
+    sayHello(): void;
+  }
 
-	/* ************************************ This keyword (context) ************************************ */
+  interface MyObjectThis {
+    helloWorld(): string;
+  }
 
-	/* Note that the 'noImplicitThis' flag must be enabled to use this utility. */
+  const myObject: MyObject & ThisType<MyObjectThis> = {
+    // this object (context is of type MyObjectThis)
+    sayHello() {
+      console.log(this.helloWorld());
+    },
+  };
 
-	interface MyObject {
-		sayHello(): void;
-	}
+  let ctx: MyObjectThis = {
+    helloWorld() {
+      return "Hello world";
+    },
+  };
 
-	interface MyObjectThis {
-		helloWorld(): string;
-	}
+  myObject.sayHello = myObject.sayHello.bind(ctx);
 
-	const myObject: MyObject & ThisType<MyObjectThis> = {
-		// this object (context is of type MyObjectThis)
-		sayHello() {
-			console.log(this.helloWorld());
-		},
-	};
+  /* ************************************ This keyword (param) ************************************ */
 
-	let ctx: MyObjectThis = {
-		helloWorld() {
-			return "Hello world";
-		},
-	};
+  function zoo(this: string) {
+    return this.toLocaleLowerCase();
+  }
 
-	myObject.sayHello = myObject.sayHello.bind(ctx);
+  type C_ThisParameterType<T> = T extends (this: infer N, ...args: any) => any ? N : unknown;
+  type C_OmitThisParameter<T> = T extends (this: any, ...args: infer N) => infer R ? (...args: N) => R : never;
 
-	/* ************************************ This keyword (param) ************************************ */
+  type thisZooType = ThisParameterType<typeof zoo>;
+  type thisZooOmitted = OmitThisParameter<typeof zoo>;
 
-	function zoo(this: string) {
-		return this.toLocaleLowerCase();
-	}
+  /* ************************************ ***************** ************************************ */
 
-	type C_ThisParameterType<T> = T extends (this: infer N, ...args: any) => any ? N : unknown;
-	type C_OmitThisParameter<T> = T extends (this: any, ...args: infer N) => infer R ? (...args: N) => R : never;
+  type C_Pick_0<T extends object, K extends keyof T> = {
+    [Nk in K]: T[Nk];
+  };
 
-	type thisZooType = ThisParameterType<typeof zoo>;
-	type thisZooOmitted = OmitThisParameter<typeof zoo>;
+  type ZZ = Pick<{ x: number; y: string }, "x">;
 }
