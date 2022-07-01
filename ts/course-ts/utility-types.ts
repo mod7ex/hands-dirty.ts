@@ -110,4 +110,19 @@ namespace UtilityClasses {
   };
 
   type ZZ = Pick<{ x: number; y: string }, "x">;
+
+  /* ************************************ Readonly ************************************ */
+
+  type DeepReadonly<T> = T extends object
+    ? {
+        readonly [K in keyof T]: DeepReadonly<T[K]>;
+      }
+    : T;
+
+  type tttt = DeepReadonly<{
+    a: number;
+    b: {
+      c: string;
+    };
+  }>;
 }
