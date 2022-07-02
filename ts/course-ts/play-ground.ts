@@ -99,7 +99,9 @@ namespace Ts {
   type ValueOf<T extends object> = T[keyof T];
   type KeyOf<T extends object, V extends ValueOf<T>> = ValueOf<{ [K in keyof T]: V extends T[K] ? K : never }>;
 
-  // Impliment IndexOf
+  type IndexOf<T extends unknown[], K extends T[number]> = ValueOf<{
+    [NK in IndexesOf<T>]: K extends T[NK] ? NK : never;
+  }>;
 
   // *********************************************************************************************
 
@@ -113,5 +115,114 @@ namespace Ts {
     // @ts-ignore
     declare const example: Circle; // this doesn't have a cost
     console.log("i am sure it is a circle ", example.radius);
+  }
+
+  // ---------------------------------------------------------------------------------------------- Template literals
+
+  let id: `user-${string}`;
+  let image: `img-${string}.png`;
+
+  type CSSValue =
+    | number // implies 'px
+    | string; // number + px|em|rem
+
+  let size = function (input: CSSValue) {
+    return typeof input === "number" ? input + "px" : input;
+  };
+
+  size("12ex"); // Error
+  type Good_CSSValue =
+    | number // implies 'px
+    | `${number}px`
+    | `${number}em`
+    | `${number}rem`;
+
+  let good_size = function (input: Good_CSSValue) {
+    return typeof input === "number" ? input + "px" : input;
+  };
+
+  good_size("sss"); // Error
+
+  // ---------------------------------------------------------------------------------------------- Object keys
+  // this is how we do in js
+  /**
+   * @typedef {Object} Prizes
+   * @property {string} first
+   * @property {string} second
+   */
+
+  type Prizes = {
+    first: string;
+    second: string;
+  };
+
+  /** @param {Prizes} prizes */ // this is how we do in js
+  function logPrizes(prizes: Prizes) {
+    let key: keyof Prizes;
+    for (key in prizes) {
+      console.log(key, prizes[key].toUpperCase());
+    }
+  }
+
+  // ---------------------------------------------------------------------------------------------- Type Guards
+  type Squarre = {
+    type: "square";
+    size: number;
+  };
+
+  type Rectangle = {
+    type: "rectangle";
+    height: number;
+    width: number;
+  };
+
+  type Shape = Squarre | Rectangle;
+
+  let isRectangle = (item: Shape): item is Rectangle => item.type === "rectangle"; // this is what a type guard is
+
+  const shapes: Shape[] = [];
+  let sq = shapes.find((s): s is Squarre => s.type === "square");
+  sq!.size;
+
+  // ---------------------------------------------------------------------------------------------- Opaque Types
+  type AccountNumber = number & { _: "account_number" };
+  type AccountBalance = number & { _: "account_balance" };
+
+  let makeAccountNumber = (num: number) => num as AccountNumber;
+  let makeAccountBalance = (num: number) => num as AccountBalance;
+
+  let setupAccount = (num: AccountNumber, bl: AccountBalance) => {
+    //
+  };
+
+  let num = makeAccountNumber(100);
+  let bl = makeAccountBalance(23);
+
+  // setupAccount(bl, num);// this is an error
+  setupAccount(num, bl);
+
+  // ---------------------------------------------------------------------------------------------- null & undefined
+
+  console.log(null == undefined); // true
+  console.log(undefined == null); // true
+  console.log(undefined == undefined); // true
+  console.log(undefined == undefined); // true
+  console.log(null == null); // true
+
+  function exo(value: string | null | undefined) {
+    if (value == null) {
+      // here value is null or undefined
+      console.log(value);
+    }
+
+    if (value != null) {
+      // here value isn't null and isn't undefined ==> it is a string
+      console.log(value);
+    }
+
+    if (value !== null) {
+      // here value is undefined or string
+      console.log(value);
+    }
   }
 }
