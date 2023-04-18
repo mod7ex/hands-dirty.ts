@@ -45,4 +45,29 @@ namespace Retry {
 			if (delay) await sleep(ms);
 		}
 	}
+
+
+	type Payload = {fn: (...args: any[]) => any, count: number, delay: number};
+
+	const retry  = ({ fn, count, delay }: Payload) => {
+		let current = 0;
+
+		return async () => {
+			while (true) {
+				try {
+					fn();
+					break;
+				} catch (error: any) {
+					current++;
+	
+					if (current > count) {
+						console.log("Retry maximum reached. Exiting");
+						break;
+					}
+				}
+	
+				if (delay) await sleep(delay);
+			}
+		}
+	}
 }
